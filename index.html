@@ -17,77 +17,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Use Kanit font as default */
-        body {
-            font-family: 'Kanit', sans-serif;
-            background-color: #f0f9ff; /* Light blue background */
-        }
-
-        /* Styling for the moving emoji background */
-        #emoji-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .emoji {
-            position: absolute;
-            font-size: 2rem;
-            user-select: none;
-            animation: floatUp 25s linear infinite;
-            opacity: 0;
-        }
-        
-        /* Animation keyframes for floating emojis */
-        @keyframes floatUp {
-            0% {
-                transform: translateY(100vh);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-10vh);
-                opacity: 0;
-            }
-        }
-        
-        /* Golden rainbow text effect */
-        .text-gold-gradient {
-            background: linear-gradient(90deg, #FFD700, #F0B90B, #FFC300, #FFD700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-            animation: gradient-animation 4s ease infinite;
-            background-size: 200% 200%;
-        }
-
-        @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        body { font-family: 'Kanit', sans-serif; background-color: #f0f9ff; }
+        #emoji-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; z-index: 0; }
+        .emoji { position: absolute; font-size: 2rem; user-select: none; animation: floatUp 25s linear infinite; opacity: 0; }
+        @keyframes floatUp { 0% { transform: translateY(100vh); opacity: 1; } 100% { transform: translateY(-10vh); opacity: 0; } }
+        .text-gold-gradient { background: linear-gradient(90deg, #FFD700, #F0B90B, #FFC300, #FFD700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; animation: gradient-animation 4s ease infinite; background-size: 200% 200%; }
+        @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     </style>
 </head>
 <body class="bg-sky-50 text-gray-800">
 
-    <!-- Container for moving emojis -->
     <div id="emoji-container"></div>
 
-    <!-- Main content container -->
     <div class="relative z-10 container mx-auto p-4 sm:p-6 md:p-8">
         
-        <!-- Header Section -->
         <header class="text-center mb-8 bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-200">
             <h1 class="text-4xl sm:text-5xl font-bold text-gold-gradient">Dashboard EasySignals</h1>
             <p class="text-2xl sm:text-3xl text-gray-600 mt-2">สัญญาบอทเทรด BTC & ETH</p>
         </header>
+        
+        <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 text-center">
+                <p class="text-lg font-semibold text-gray-600">ราคา BTC/USDT ปัจจุบัน</p>
+                <p class="text-3xl font-bold text-yellow-500" id="live-btc-price">Loading...</p>
+            </div>
+            <div class="p-4 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 text-center">
+                <p class="text-lg font-semibold text-gray-600">ราคา ETH/USDT ปัจจุบัน</p>
+                <p class="text-3xl font-bold text-gray-600" id="live-eth-price">Loading...</p>
+            </div>
+        </div>
 
-        <!-- Controls Section -->
         <div class="mb-6 p-4 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 flex flex-wrap items-center justify-center gap-4">
             <button id="update-btn" class="flex items-center gap-2 text-white font-bold py-3 px-6 rounded-full bg-blue-700 hover:bg-blue-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
@@ -100,117 +59,65 @@
             <button class="filter-btn text-white font-bold py-2 px-5 rounded-full bg-gray-500 hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-md" data-pair="ETHUSDT.P">ETH/USDT</button>
         </div>
 
-        <!-- Order Size Calculator Section -->
         <div id="calculator-section" class="mb-6 p-6 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200">
             <h2 class="text-2xl font-bold text-center text-sky-700 mb-4">เครื่องมือคำนวณ Order Size</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div class="flex flex-col">
-                    <label for="usdt-port" class="mb-1 text-sm font-medium text-gray-700">1. USDT ในพอร์ต</label>
-                    <input type="number" id="usdt-port" placeholder="เช่น 1000" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="flex flex-col">
-                    <label for="trade-percent" class="mb-1 text-sm font-medium text-gray-700">2. % ที่ใช้เทรด</label>
-                    <input type="number" id="trade-percent" placeholder="เช่น 5" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="flex flex-col">
-                    <label for="signal-size" class="mb-1 text-sm font-medium text-gray-700">3. Order Size จากสัญญาณ</label>
-                    <input type="number" id="signal-size" placeholder="เช่น 100" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <!-- CHANGE: Updated to rounded-full -->
+                <div class="flex flex-col"><label for="usdt-port" class="mb-1 text-sm font-medium text-gray-700">1. USDT ในพอร์ต</label><input type="number" id="usdt-port" placeholder="เช่น 1000" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></div>
+                <div class="flex flex-col"><label for="trade-percent" class="mb-1 text-sm font-medium text-gray-700">2. % ที่ใช้เทรด</label><input type="number" id="trade-percent" placeholder="เช่น 5" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></div>
+                <div class="flex flex-col"><label for="signal-size" class="mb-1 text-sm font-medium text-gray-700">3. Order Size จากสัญญาณ</label><input type="number" id="signal-size" placeholder="เช่น 100" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></div>
                 <button id="calculate-btn" class="w-full text-white font-bold py-2 px-4 rounded-full bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 h-10">คำนวณ</button>
             </div>
             <div class="mt-4 text-center bg-green-50 p-4 rounded-lg border border-green-200">
-                <p class="text-lg font-medium text-gray-700">
-                    Order Size ที่ปรับปรุงแล้ว: 
-                    <span id="result-size" class="text-2xl font-bold text-green-600">0.000000</span>
-                </p>
+                <p class="text-lg font-medium text-gray-700">Order Size ที่ปรับปรุงแล้ว: <span id="result-size" class="text-2xl font-bold text-green-600">0.000000</span></p>
             </div>
         </div>
         
-        <!-- TP/SL Calculator Section -->
         <div id="tpsl-calculator-section" class="mb-6 p-6 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200">
             <h2 class="text-2xl font-bold text-center text-indigo-700 mb-4">เครื่องมือคำนวณ TP & SL</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div class="flex flex-col">
-                    <label for="position-type" class="mb-1 text-sm font-medium text-gray-700">1. Position</label>
-                    <select id="position-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 h-10">
-                        <option value="long">Long</option>
-                        <option value="short">Short</option>
-                    </select>
-                </div>
-                <div class="flex flex-col">
-                    <label for="coin-type" class="mb-1 text-sm font-medium text-gray-700">2. คู่เทรด</label>
-                    <select id="coin-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 h-10">
-                        <option value="btc">BTC</option>
-                        <option value="eth">ETH</option>
-                    </select>
-                </div>
-                <div class="flex flex-col">
-                    <label for="entry-price" class="mb-1 text-sm font-medium text-gray-700">3. ราคาเข้า (USDT)</label>
-                    <input type="number" id="entry-price" placeholder="เช่น 65000" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <!-- CHANGE: Updated to rounded-full -->
+                <div class="flex flex-col"><label for="position-type" class="mb-1 text-sm font-medium text-gray-700">1. Position</label><select id="position-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 h-10"><option value="long">Long</option><option value="short">Short</option></select></div>
+                <div class="flex flex-col"><label for="coin-type" class="mb-1 text-sm font-medium text-gray-700">2. คู่เทรด</label><select id="coin-type" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 h-10"><option value="btc">BTC</option><option value="eth">ETH</option></select></div>
+                <div class="flex flex-col"><label for="entry-price" class="mb-1 text-sm font-medium text-gray-700">3. ราคาเข้า (USDT)</label><input type="number" id="entry-price" placeholder="เช่น 65000" class="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></div>
                 <button id="tpsl-calculate-btn" class="w-full text-white font-bold py-2 px-4 rounded-full bg-purple-600 hover:bg-purple-700 transition-colors duration-300 h-10">คำนวณ TP/SL</button>
             </div>
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div class="bg-green-50 p-3 rounded-lg border border-green-200">
-                    <p class="font-medium text-gray-700">TP1</p>
-                    <p id="tp1-result" class="text-xl font-bold text-green-600">0.00</p>
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200 col-span-1 sm:col-span-4">
+                    <p class="font-medium text-gray-700">สถานะปัจจุบัน (PnL)</p>
+                    <p id="current-status-result" class="text-2xl font-bold text-gray-500">-</p>
                 </div>
-                <div class="bg-green-50 p-3 rounded-lg border border-green-200">
-                    <p class="font-medium text-gray-700">TP2</p>
-                    <p id="tp2-result" class="text-xl font-bold text-green-600">0.00</p>
-                </div>
-                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
-                    <p id="sl-label" class="font-medium text-gray-700">SL</p>
-                    <p id="sl-result" class="text-xl font-bold text-red-600">0.00</p>
-                </div>
+                <div class="bg-green-50 p-3 rounded-lg border border-green-200"><p class="font-medium text-gray-700">TP1</p><p id="tp1-result" class="text-xl font-bold text-green-600">0.00</p></div>
+                <div class="bg-green-50 p-3 rounded-lg border border-green-200"><p class="font-medium text-gray-700">TP2</p><p id="tp2-result" class="text-xl font-bold text-green-600">0.00</p></div>
+                <div class="bg-red-50 p-3 rounded-lg border border-red-200"><p id="sl-label" class="font-medium text-gray-700">SL</p><p id="sl-result" class="text-xl font-bold text-red-600">0.00</p></div>
             </div>
         </div>
 
-        <!-- Table Section -->
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-100/80 border-b-2 border-gray-200">
-                        <tr>
-                            <th class="p-4 font-semibold text-gray-600">No.</th>
-                            <th class="p-4 font-semibold text-gray-600">ให้ทำการ</th>
-                            <th class="p-4 font-semibold text-gray-600">โดยการ</th>
-                            <th class="p-4 font-semibold text-gray-600">ที่ราคา</th>
-                            <th class="p-4 font-semibold text-gray-600">คู่เทรด</th>
-                            <th class="p-4 font-semibold text-gray-600">Time</th>
-                            <th class="p-4 font-semibold text-gray-600">Order Size</th>
-                        </tr>
-                    </thead>
-                    <tbody id="data-table-body" class="divide-y divide-gray-200">
-                        <tr>
-                            <td colspan="7" class="text-center p-8 text-gray-500">
-                                ... กรุณากดปุ่ม "อัปเดตข้อมูลล่าสุด" เพื่อแสดงข้อมูล ...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-100/80 border-b-2 border-gray-200"><tr><th class="p-4 font-semibold text-gray-600">No.</th><th class="p-4 font-semibold text-gray-600">ให้ทำการ</th><th class="p-4 font-semibold text-gray-600">โดยการ</th><th class="p-4 font-semibold text-gray-600">ที่ราคา</th><th class="p-4 font-semibold text-gray-600">คู่เทรด</th><th class="p-4 font-semibold text-gray-600">Time</th><th class="p-4 font-semibold text-gray-600">Order Size</th></tr></thead><tbody id="data-table-body" class="divide-y divide-gray-200"><tr><td colspan="7" class="text-center p-8 text-gray-500">... กรุณากดปุ่ม "อัปเดตข้อมูลล่าสุด" เพื่อแสดงข้อมูล ...</td></tr></tbody></table></div>
         </div>
         
     </div>
 
     <script>
+        // --- Global State ---
+        let liveBtcPrice = 0;
+        let liveEthPrice = 0;
+        let allFetchedData = [];
+        let currentFilter = 'ALL';
+
         // --- DOM Elements ---
         const updateBtn = document.getElementById('update-btn');
         const tableBody = document.getElementById('data-table-body');
         const filterBtns = document.querySelectorAll('.filter-btn');
         const emojiContainer = document.getElementById('emoji-container');
+        const liveBtcPriceSpan = document.getElementById('live-btc-price');
+        const liveEthPriceSpan = document.getElementById('live-eth-price');
         
-        // Order Size Calculator DOM Elements
         const usdtPortInput = document.getElementById('usdt-port');
         const tradePercentInput = document.getElementById('trade-percent');
         const signalSizeInput = document.getElementById('signal-size');
         const calculateBtn = document.getElementById('calculate-btn');
         const resultSizeSpan = document.getElementById('result-size');
 
-        // TP/SL Calculator DOM Elements
         const positionSelect = document.getElementById('position-type');
         const coinSelect = document.getElementById('coin-type');
         const entryPriceInput = document.getElementById('entry-price');
@@ -219,52 +126,124 @@
         const tp2ResultSpan = document.getElementById('tp2-result');
         const slLabelSpan = document.getElementById('sl-label');
         const slResultSpan = document.getElementById('sl-result');
+        const currentStatusSpan = document.getElementById('current-status-result');
 
-
-        // --- Configuration ---
         const a_s_URL = 'https://script.google.com/macros/s/AKfycbweEk2pchF5m1er9vYK0DfLso8A0hikBB1v6Yi-SC3qlXWZ_Ps9eEBJXRDvQ9QJwzHF/exec';
         const LOCAL_STORAGE_KEY = 'cryptoTradeSignals';
 
-        // --- Functions ---
-        function fetchData() { /* ... existing code ... */ }
-        function renderTable(data) { /* ... existing code ... */ }
-        function filterTable(pair) { /* ... existing code ... */ }
-        function saveToLocalStorage(data) { /* ... existing code ... */ }
-        function loadFromLocalStorage() { /* ... existing code ... */ }
-        function handleFetchError(message) { /* ... existing code ... */ }
-        function createEmojiBackground() { /* ... existing code ... */ }
-        
-        // Copy existing functions here to keep it clean
-        fetchData = function() {
-            Swal.fire({ title: 'กำลังดึงข้อมูล...', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        // --- Core Functions ---
+        function fetchData() {
+            Swal.fire({ title: 'กำลังดึงข้อมูล...', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-            let requestTimeout = setTimeout(() => { if (window[callbackName]) { delete window[callbackName]; } handleFetchError('การร้องขอข้อมูลหมดเวลา (Timeout)'); }, 15000); 
+            let requestTimeout = setTimeout(() => {
+                if (window[callbackName]) delete window[callbackName];
+                handleFetchError('การร้องขอข้อมูลหมดเวลา (Timeout)');
+            }, 15000);
             window[callbackName] = function(response) {
                 clearTimeout(requestTimeout);
-                delete window[callbackName];
-                if (response && response.success) { renderTable(response.data); saveToLocalStorage(response.data); Swal.fire({ icon: 'success', title: 'อัปเดตข้อมูลสำเร็จ!', showConfirmButton: false, timer: 1500 }); } 
-                else { handleFetchError(response.error || 'ข้อมูลที่ได้รับไม่ถูกต้อง'); }
+                if(window[callbackName]) delete window[callbackName];
+                
+                if (response && response.success) {
+                    allFetchedData = response.data || [];
+                    saveToLocalStorage(response);
+                    
+                    liveBtcPrice = response.livePrices.btc || 0;
+                    liveEthPrice = response.livePrices.eth || 0;
+                    liveBtcPriceSpan.textContent = liveBtcPrice.toLocaleString('en-US');
+                    liveEthPriceSpan.textContent = liveEthPrice.toLocaleString('en-US');
+                    
+                    displayData(); // Call master display function
+                    calculateCurrentStatus(); 
+
+                    Swal.fire({ icon: 'success', title: 'อัปเดตข้อมูลสำเร็จ!', showConfirmButton: false, timer: 1500 });
+                } else {
+                    handleFetchError(response.error || 'ข้อมูลที่ได้รับไม่ถูกต้อง');
+                }
             };
-            const script = document.createElement('script'); script.src = `${a_s_URL}?callback=${callbackName}`;
-            script.onerror = () => handleFetchError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+            const script = document.createElement('script');
+            script.src = `${a_s_URL}?callback=${callbackName}`;
+            script.onerror = () => {
+                if (window[callbackName]) delete window[callbackName];
+                handleFetchError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+            };
             document.body.appendChild(script);
-        };
-        renderTable = function(data) {
+        }
+        
+        // CHANGE: New master function to filter, sort, and render data
+        function displayData() {
+            if (!allFetchedData) return;
+
+            // 1. Filter data based on the current active filter
+            const filteredData = currentFilter === 'ALL'
+                ? allFetchedData
+                : allFetchedData.filter(item => item.pair === currentFilter);
+
+            // 2. Sort the filtered data by 'No.' in descending order
+            const sortedData = filteredData.sort((a, b) => {
+                const numA = parseInt(a.no, 10);
+                const numB = parseInt(b.no, 10);
+                if (isNaN(numA)) return 1;   // Treat non-numeric 'no' as smaller
+                if (isNaN(numB)) return -1;
+                return numB - numA; // Sort descending
+            });
+            
+            // 3. Render the final sorted and filtered data to the table
+            renderTable(sortedData);
+        }
+
+        function renderTable(data) {
             tableBody.innerHTML = ''; 
-            if (!data || data.length === 0) { tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-8 text-gray-500">ไม่พบข้อมูล</td></tr>`; return; }
+            if (!data || data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-8 text-gray-500">ไม่พบข้อมูล</td></tr>`;
+                return;
+            }
             data.forEach(item => {
-                const row = document.createElement('tr'); row.className = 'hover:bg-sky-50 transition-colors duration-200'; row.dataset.pair = item.pair;
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-sky-50 transition-colors duration-200';
+                row.dataset.pair = item.pair;
                 const actionColor = item.action.toLowerCase().includes('long') || item.action.toLowerCase().includes('buy') ? 'text-green-600' : 'text-red-600';
                 const actionIcon = item.no ? (item.action.toLowerCase().includes('long') || item.action.toLowerCase().includes('buy') ? '▲' : '▼') : '';
-                row.innerHTML = `<td class="p-4">${item.no}</td> <td class="p-4 font-semibold ${actionColor}">${actionIcon} ${item.action}</td> <td class="p-4">${item.method}</td> <td class="p-4 font-mono text-indigo-600">${item.price}</td> <td class="p-4 font-semibold">${item.pair}</td> <td class="p-4">${item.time}</td> <td class="p-4">${item.size}</td>`;
+                row.innerHTML = `
+                    <td class="p-4">${item.no}</td>
+                    <td class="p-4 font-semibold ${actionColor}">${actionIcon} ${item.action}</td>
+                    <td class="p-4">${item.method}</td>
+                    <td class="p-4 font-mono text-indigo-600">${item.price}</td>
+                    <td class="p-4 font-semibold">${item.pair}</td>
+                    <td class="p-4">${item.time}</td>
+                    <td class="p-4">${item.size}</td>`;
                 tableBody.appendChild(row);
             });
-        };
-        filterTable = function(pair) { const rows = tableBody.querySelectorAll('tr'); rows.forEach(row => { row.style.display = (pair === 'ALL' || row.dataset.pair === pair) ? '' : 'none'; }); };
-        saveToLocalStorage = function(data) { try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data)); } catch (e) { console.error(e); } };
-        loadFromLocalStorage = function() { try { const data = localStorage.getItem(LOCAL_STORAGE_KEY); return data ? JSON.parse(data) : null; } catch (e) { console.error(e); return null; } };
-        handleFetchError = function(message) { Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด!', html: message, confirmButtonText: 'รับทราบ', customClass: { htmlContainer: 'text-left whitespace-pre-wrap' } }); tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-8 text-red-500">${message}</td></tr>`; };
-        createEmojiBackground = function() { const emojis = ['🚀', '📈', '📉', '💰', '₿', '♦️', '💸', '💎']; const container = document.getElementById('emoji-container'); for (let i = 0; i < 30; i++) { const emoji = document.createElement('span'); emoji.classList.add('emoji'); emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)]; emoji.style.left = `${Math.random() * 100}vw`; emoji.style.animationDuration = `${Math.random() * 15 + 10}s`; emoji.style.animationDelay = `${Math.random() * 10}s`; emoji.style.fontSize = `${Math.random() * 1.5 + 1}rem`; container.appendChild(emoji); } };
+        }
+
+        function calculateCurrentStatus() {
+            const price = parseFloat(entryPriceInput.value);
+            if (isNaN(price) || price <= 0) {
+                currentStatusSpan.textContent = '-';
+                currentStatusSpan.className = 'text-2xl font-bold text-gray-500';
+                return;
+            }
+            const position = positionSelect.value;
+            const coin = coinSelect.value;
+            const livePrice = coin === 'btc' ? liveBtcPrice : liveEthPrice;
+            if (livePrice === 0) {
+                currentStatusSpan.textContent = 'รอราคา...';
+                currentStatusSpan.className = 'text-2xl font-bold text-gray-500';
+                return;
+            }
+            let pnlPercent = (position === 'long') 
+                ? ((livePrice - price) / price) * 100 
+                : ((price - livePrice) / price) * 100;
+            
+            currentStatusSpan.textContent = `${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%`;
+            currentStatusSpan.className = pnlPercent >= 0 
+                ? 'text-2xl font-bold text-green-600' 
+                : 'text-2xl font-bold text-red-600';
+        }
+        
+        function saveToLocalStorage(data) { try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data)); } catch (e) { console.error("Error saving to local storage", e); } }
+        function loadFromLocalStorage() { try { const data = localStorage.getItem(LOCAL_STORAGE_KEY); return data ? JSON.parse(data) : null; } catch (e) { console.error("Error loading from local storage", e); return null; } }
+        function handleFetchError(message) { Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด!', html: message, confirmButtonText: 'รับทราบ', customClass: { htmlContainer: 'text-left whitespace-pre-wrap' } }); tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-8 text-red-500">${message}</td></tr>`; }
+        function createEmojiBackground() { const emojis = ['🚀', '📈', '📉', '💰', '₿', '♦️', '💸', '💎']; const container = document.getElementById('emoji-container'); for (let i = 0; i < 30; i++) { const emoji = document.createElement('span'); emoji.classList.add('emoji'); emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)]; emoji.style.left = `${Math.random() * 100}vw`; emoji.style.animationDuration = `${Math.random() * 15 + 10}s`; emoji.style.animationDelay = `${Math.random() * 10}s`; emoji.style.fontSize = `${Math.random() * 1.5 + 1}rem`; container.appendChild(emoji); } }
 
         // --- Event Listeners ---
         updateBtn.addEventListener('click', fetchData);
@@ -273,11 +252,11 @@
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500'));
                 btn.classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
-                filterTable(btn.dataset.pair);
+                currentFilter = btn.dataset.pair; // Set the current filter
+                displayData(); // Re-render the table with filter and sort
             });
         });
 
-        // Order Size Calculator Event Listener
         calculateBtn.addEventListener('click', () => {
             const usdt = parseFloat(usdtPortInput.value);
             const percent = parseFloat(tradePercentInput.value);
@@ -290,69 +269,53 @@
             resultSizeSpan.textContent = calculatedSize.toFixed(6);
         });
 
-        // TP/SL Calculator Event Listener
         tpslCalculateBtn.addEventListener('click', () => {
             const position = positionSelect.value;
             const coin = coinSelect.value;
             const price = parseFloat(entryPriceInput.value);
 
             if (isNaN(price) || price <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'ข้อมูลไม่ถูกต้อง',
-                    text: 'กรุณากรอกราคาเข้าเป็นตัวเลขที่ถูกต้องและมากกว่า 0',
-                });
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ถูกต้อง', text: 'กรุณากรอกราคาเข้าเป็นตัวเลขที่ถูกต้องและมากกว่า 0'});
                 return;
             }
 
             let tp1 = 0, tp2 = 0, sl = 0;
-
             if (position === 'long') {
                 slLabelSpan.textContent = 'SL (Long)';
-                if (coin === 'btc') {
-                    tp1 = price * (1 + 0.0065);
-                    tp2 = price * (1 + 0.012);
-                    sl  = price * (1 - 0.04);
-                } else { // ETH
-                    tp1 = price * (1 + 0.06);
-                    tp2 = price * (1 + 0.12);
-                    sl  = price * (1 - 0.055);
-                }
-            } else { // Short
+                if (coin === 'btc') { tp1 = price * (1 + 0.0065); tp2 = price * (1 + 0.012); sl  = price * (1 - 0.04); } 
+                else { tp1 = price * (1 + 0.06); tp2 = price * (1 + 0.12); sl  = price * (1 - 0.055); }
+            } else {
                 slLabelSpan.textContent = 'SL (Short)';
-                if (coin === 'btc') {
-                    tp1 = price * (1 - 0.031);
-                    tp2 = price * (1 - 0.035);
-                    sl  = price * (1 + 0.04);
-                } else { // ETH
-                    tp1 = price * (1 - 0.09);
-                    tp2 = price * (1 - 0.16);
-                    sl  = price * (1 + 0.07);
-                }
+                if (coin === 'btc') { tp1 = price * (1 - 0.031); tp2 = price * (1 - 0.035); sl  = price * (1 + 0.04); } 
+                else { tp1 = price * (1 - 0.09); tp2 = price * (1 - 0.16); sl  = price * (1 + 0.07); }
             }
 
-            // Display results with appropriate decimal places
             const decimalPlaces = price > 100 ? 2 : 4;
             tp1ResultSpan.textContent = tp1.toFixed(decimalPlaces);
             tp2ResultSpan.textContent = tp2.toFixed(decimalPlaces);
             slResultSpan.textContent = sl.toFixed(decimalPlaces);
+            calculateCurrentStatus();
         });
 
+        [positionSelect, coinSelect, entryPriceInput].forEach(el => {
+            el.addEventListener('input', calculateCurrentStatus);
+        });
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             createEmojiBackground();
             const cachedData = loadFromLocalStorage();
-            if (cachedData) {
-                renderTable(cachedData);
-                 Swal.fire({
-                    toast: true, position: 'top-end', icon: 'info',
-                    title: 'แสดงข้อมูลที่บันทึกไว้ล่าสุด',
-                    showConfirmButton: false, timer: 3000, timerProgressBar: true
-                });
+            if (cachedData && cachedData.livePrices) {
+                allFetchedData = cachedData.data || [];
+                liveBtcPrice = cachedData.livePrices.btc || 0;
+                liveEthPrice = cachedData.livePrices.eth || 0;
+                liveBtcPriceSpan.textContent = liveBtcPrice.toLocaleString('en-US');
+                liveEthPriceSpan.textContent = liveEthPrice.toLocaleString('en-US');
+                displayData();
             }
             document.querySelector('.filter-btn[data-pair="ALL"]').classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
         });
+
     </script>
 </body>
 </html>
